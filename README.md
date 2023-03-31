@@ -1,4 +1,22 @@
-# Terraform Provider Scaffolding (Terraform Plugin Framework)
+# Permit.io Terraform Provider
+
+
+https://app.permit.io/settings/api-keys -> new Org Key
+
+```bash
+export PERMIT_API_KEY=<Your SDK API Key>
+
+
+curl -s -H "Authorization: Bearer $PERMIT_API_KEY" \
+  -H "Content-Type: application/json" \
+  https://api.permit.io/v2/projects \
+  -d @project-data.json | jq .
+
+```
+
+
+
+
 
 _This template repository is built on the [Terraform Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework). The template repository built on the [Terraform Plugin SDK](https://github.com/hashicorp/terraform-plugin-sdk) can be found at [terraform-provider-scaffolding](https://github.com/hashicorp/terraform-provider-scaffolding). See [Which SDK Should I Use?](https://www.terraform.io/docs/plugin/which-sdk.html) in the Terraform documentation for additional information._
 

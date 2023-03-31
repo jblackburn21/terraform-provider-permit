@@ -1,3 +1,3 @@
-provider "scaffolding" {
+provider "permit" {
   # example configuration here
 }
