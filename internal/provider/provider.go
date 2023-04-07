@@ -122,12 +122,18 @@ func (p *permitProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 func (p *permitProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewEnvironmentResource,
 		NewProjectResource,
+		NewResourceResource,
+		NewResourceActionResource,
+		NewRoleResource,
+		NewTenantResource,
 	}
 }
 
 func (p *permitProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewEnvironmentDataSource,
 		NewProjectDataSource,
 	}
 }

@@ -25,9 +25,9 @@ type projectDataSource struct {
 
 // projectDataSourceModel describes the data source data model.
 type projectDataSourceModel struct {
-	Key            types.String `tfsdk:"key"`
 	Id             types.String `tfsdk:"id"`
 	OrganizationId types.String `tfsdk:"organization_id"`
+	Key            types.String `tfsdk:"key"`
 	Name           types.String `tfsdk:"name"`
 	Description    types.String `tfsdk:"description"`
 }
@@ -44,10 +44,6 @@ func (d *projectDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 		MarkdownDescription: "Project data source",
 
 		Attributes: map[string]schema.Attribute{
-			"key": schema.StringAttribute{
-				MarkdownDescription: "Project key",
-				Required:            true,
-			},
 			"id": schema.StringAttribute{
 				MarkdownDescription: "Project identifier",
 				Computed:            true,
@@ -55,6 +51,10 @@ func (d *projectDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			"organization_id": schema.StringAttribute{
 				MarkdownDescription: "Organization identifier",
 				Computed:            true,
+			},
+			"key": schema.StringAttribute{
+				MarkdownDescription: "Project key",
+				Required:            true,
 			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Project name",
@@ -99,6 +99,7 @@ func (d *projectDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	projectKey := state.Key.ValueString()
 
 	ctx = tflog.SetField(ctx, "permit_project_key", projectKey)
+
 	tflog.Debug(ctx, "Reading project data source for key")
 
 	project, err := d.client.Api.Projects.Get(ctx, projectKey)
@@ -114,9 +115,9 @@ func (d *projectDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	// Map project body to model
 	state = projectDataSourceModel{
-		Key:            types.StringValue(project.Key),
 		Id:             types.StringValue(project.Id),
 		OrganizationId: types.StringValue(project.OrganizationId),
+		Key:            types.StringValue(project.Key),
 		Name:           types.StringValue(project.Name),
 		Description:    types.StringValue(*project.Description),
 	}

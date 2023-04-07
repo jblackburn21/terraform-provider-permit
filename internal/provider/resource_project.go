@@ -28,9 +28,9 @@ type projectResource struct {
 
 // projectResourceModel describes the resource data model.
 type projectResourceModel struct {
-	Key            types.String `tfsdk:"key"`
 	Id             types.String `tfsdk:"id"`
 	OrganizationId types.String `tfsdk:"organization_id"`
+	Key            types.String `tfsdk:"key"`
 	Name           types.String `tfsdk:"name"`
 	Description    types.String `tfsdk:"description"`
 }
@@ -46,8 +46,8 @@ func (r *projectResource) Configure(ctx context.Context, req resource.ConfigureR
 		tflog.Error(ctx, "Unable to prepare client")
 		return
 	}
-	r.client = client
 
+	r.client = client
 }
 
 func (r *projectResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -60,10 +60,6 @@ func (r *projectResource) Schema(ctx context.Context, req resource.SchemaRequest
 		MarkdownDescription: "Project resource",
 
 		Attributes: map[string]schema.Attribute{
-			"key": schema.StringAttribute{
-				MarkdownDescription: "Project key",
-				Required:            true,
-			},
 			"id": schema.StringAttribute{
 				MarkdownDescription: "Project identifier",
 				Computed:            true,
@@ -74,6 +70,16 @@ func (r *projectResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"organization_id": schema.StringAttribute{
 				MarkdownDescription: "Organization identifier",
 				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"key": schema.StringAttribute{
+				MarkdownDescription: "Project key",
+				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Project name",
@@ -103,24 +109,23 @@ func (r *projectResource) Create(ctx context.Context, req resource.CreateRequest
 
 	projectKey := plan.Key.ValueString()
 	projectName := plan.Name.ValueString()
-	description := plan.Description.ValueString()
-
-	ctx = tflog.SetField(ctx, "permit_project_key", projectKey)
-	ctx = tflog.SetField(ctx, "permit_project_name", projectName)
+	projectDescription := plan.Description.ValueString()
 
 	newProject := *models.NewProjectCreate(projectKey, projectName)
 
-	tflog.Debug(ctx, "Creating project resource")
-
-	if description != "" {
-		newProject.SetDescription(description)
+	if projectDescription != "" {
+		newProject.SetDescription(projectDescription)
 	}
+
+	ctx = tflog.SetField(ctx, "permit_project_key", projectKey)
+
+	tflog.Debug(ctx, "Creating project resource")
 
 	project, err := r.client.Api.Projects.Create(ctx, newProject)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to Create Project",
+			"Unable to create project",
 			err.Error(),
 		)
 		return
@@ -128,24 +133,28 @@ func (r *projectResource) Create(ctx context.Context, req resource.CreateRequest
 
 	tflog.Debug(ctx, "Completed new project request")
 
-	plan.Key = types.StringValue(project.Key)
 	plan.Id = types.StringValue(project.Id)
 	plan.OrganizationId = types.StringValue(project.OrganizationId)
+	plan.Key = types.StringValue(project.Key)
 	plan.Name = types.StringValue(project.Name)
 	plan.Description = types.StringValue(*project.Description)
 
-	// Write logs using the tflog package
-	// Documentation: https://terraform.io/plugin/log
-	tflog.Trace(ctx, "created a project")
+	tflog.Debug(ctx, "Updating project state")
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	tflog.Debug(ctx, "Finished creating project resource", map[string]any{"success": true})
 }
 
 func (r *projectResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state *projectResourceModel
+	tflog.Debug(ctx, "Preparing to read project resource")
+
+	var state projectResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -154,20 +163,49 @@ func (r *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	// httpResp, err := r.client.Do(httpReq)
-	// if err != nil {
-	//     resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read example, got error: %s", err))
-	//     return
-	// }
+	projectKey := state.Key.ValueString()
+
+	ctx = tflog.SetField(ctx, "permit_project_key", projectKey)
+
+	tflog.Debug(ctx, "Reading project resource")
+
+	project, err := r.client.Api.Projects.Get(ctx, projectKey)
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to read project",
+			err.Error(),
+		)
+		return
+	}
+
+	tflog.Debug(ctx, "Completed read project request")
+
+	// Map response body to model
+	state = projectResourceModel{
+		Id:             types.StringValue(project.Id),
+		OrganizationId: types.StringValue(project.OrganizationId),
+		Key:            types.StringValue(project.Key),
+		Name:           types.StringValue(project.Name),
+		Description:    types.StringValue(*project.Description),
+	}
+
+	tflog.Debug(ctx, "Updating project state")
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, "Finished reading project resource", map[string]any{"success": true})
 }
 
 func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan *projectResourceModel
+	tflog.Debug(ctx, "Preparing to update project resource")
+
+	var plan projectResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
@@ -176,19 +214,59 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	// httpResp, err := r.client.Do(httpReq)
-	// if err != nil {
-	//     resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update example, got error: %s", err))
-	//     return
-	// }
+	tflog.Debug(ctx, "Building update project request")
+
+	projectKey := plan.Key.ValueString()
+	projectName := plan.Name.ValueString()
+	projectDescription := plan.Description.ValueString()
+
+	updateProject := *models.NewProjectUpdate()
+
+	updateProject.SetName(projectName)
+
+	if projectDescription != "" {
+		updateProject.SetDescription(projectDescription)
+	}
+
+	ctx = tflog.SetField(ctx, "permit_project_key", projectKey)
+
+	tflog.Debug(ctx, "Updating project resource")
+
+	project, err := r.client.Api.Projects.Update(ctx, projectKey, updateProject)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to update project",
+			err.Error(),
+		)
+		return
+	}
+
+	tflog.Debug(ctx, "Completed update project request")
+
+	// Overwrite items with refreshed state
+	plan = projectResourceModel{
+		Id:             types.StringValue(project.Id),
+		OrganizationId: types.StringValue(project.OrganizationId),
+		Key:            types.StringValue(project.Key),
+		Name:           types.StringValue(project.Name),
+		Description:    types.StringValue(*project.Description),
+	}
+
+	tflog.Debug(ctx, "Updating project state")
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, "Finished updating project resource", map[string]any{"success": true})
 }
 
 func (r *projectResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	tflog.Debug(ctx, "Preparing to delete project resource")
+
 	var state *projectResourceModel
 
 	// Read Terraform prior state data into the model
@@ -198,17 +276,24 @@ func (r *projectResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
+	projectKey := state.Key.ValueString()
+
+	ctx = tflog.SetField(ctx, "permit_project_key", projectKey)
+
+	tflog.Debug(ctx, "Deleting project resource")
+
 	err := r.client.Api.Projects.Delete(ctx, state.Key.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to Delete Project",
+			"Unable to delete project",
 			err.Error(),
 		)
 		return
 	}
-	tflog.Debug(ctx, "Deleted project resource", map[string]any{"success": true})
+
+	tflog.Debug(ctx, "Finished deleting project resource", map[string]any{"success": true})
 }
 
 func (r *projectResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughID(ctx, path.Root("key"), req, resp)
 }
