@@ -174,7 +174,9 @@ func (r *roleResource) Create(ctx context.Context, req resource.CreateRequest, r
 
 	tflog.Debug(ctx, "Completed new role request")
 
-	permissions, _ := types.SetValueFrom(ctx, types.StringType, role.Permissions)
+	// TODO: this returns `resource:action` instead of the action id
+	//permissions, _ := types.SetValueFrom(ctx, types.StringType, role.Permissions)
+	permissions, _ := types.SetValueFrom(ctx, types.StringType, rolePermissions)
 
 	plan.Id = types.StringValue(role.Id)
 	plan.OrganizationId = types.StringValue(role.OrganizationId)
@@ -233,6 +235,18 @@ func (r *roleResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 
 	tflog.Debug(ctx, "Completed read role request")
 
+	// TODO: this is required to maintain consistent state since permissions are created with resource action ids, but
+	// the api returns `resource:action`
+	resourceActionIds := make([]string, len(role.Permissions))
+
+	for i, p := range role.Permissions {
+		// TODO: handle err
+		resourceActionId, _ := getResourceActionId(ctx, r.client, role.ProjectId, role.EnvironmentId, p)
+		resourceActionIds[i] = resourceActionId
+	}
+
+	permissions, _ := types.SetValueFrom(ctx, types.StringType, resourceActionIds)
+
 	// Map response body to model
 	state = roleResourceModel{
 		Id:             types.StringValue(role.Id),
@@ -242,6 +256,7 @@ func (r *roleResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 		Key:            types.StringValue(role.Key),
 		Name:           types.StringValue(role.Name),
 		Description:    types.StringValue(*role.Description),
+		Permissions:    permissions,
 	}
 
 	tflog.Debug(ctx, "Updating role state")
@@ -303,6 +318,18 @@ func (r *roleResource) Update(ctx context.Context, req resource.UpdateRequest, r
 
 	tflog.Debug(ctx, "Completed update role request")
 
+	// TODO: this is required to maintain consistent state since permissions are created with resource action ids, but
+	// the api returns `resource:action`
+	resourceActionIds := make([]string, len(role.Permissions))
+
+	for i, p := range role.Permissions {
+		// TODO: handle err
+		resourceActionId, _ := getResourceActionId(ctx, r.client, role.ProjectId, role.EnvironmentId, p)
+		resourceActionIds[i] = resourceActionId
+	}
+
+	permissions, _ := types.SetValueFrom(ctx, types.StringType, resourceActionIds)
+
 	// Overwrite items with refreshed state
 	plan = roleResourceModel{
 		Id:             types.StringValue(role.Id),
@@ -312,6 +339,7 @@ func (r *roleResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		Key:            types.StringValue(role.Key),
 		Name:           types.StringValue(role.Name),
 		Description:    types.StringValue(*role.Description),
+		Permissions:    permissions,
 	}
 
 	tflog.Debug(ctx, "Updating role state")
@@ -410,4 +438,29 @@ func (r *roleResource) ImportState(ctx context.Context, req resource.ImportState
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("project_id"), project.Id)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("environment_id"), environment.Id)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("key"), roleKey)...)
+}
+
+func getResourceActionId(ctx context.Context, client *permit.Client, projectId string, environmentId string, permission string) (string, error) {
+
+	split := strings.Split(permission, ":")
+
+	resourceKey := split[0]
+	resourceActionKey := split[1]
+
+	ctx = tflog.SetField(ctx, "permit_project_id", projectId)
+	ctx = tflog.SetField(ctx, "permit_environment_id", environmentId)
+	ctx = tflog.SetField(ctx, "permit_resource_key", resourceKey)
+	ctx = tflog.SetField(ctx, "permit_resource_action_key", resourceActionKey)
+
+	tflog.Debug(ctx, "Reading resource action id")
+
+	client.Api.SetContext(ctx, projectId, environmentId)
+
+	resourceAction, err := client.Api.ResourceActions.Get(ctx, resourceKey, resourceActionKey)
+
+	if err != nil {
+		return "", err
+	}
+
+	return resourceAction.Id, nil
 }

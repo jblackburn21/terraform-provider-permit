@@ -11,7 +11,7 @@ require (
 	github.com/permitio/permit-golang v0.0.5
 )
 
-replace github.com/permitio/permit-golang v0.0.5 => "/Users/jblackburn/repos/github/jblackburn21/permit-golang"
+replace github.com/permitio/permit-golang v0.0.5 => /Users/jblackburn/repos/github/jblackburn21/permit-golang
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect

@@ -37,13 +37,14 @@ resource "permit_resource" "sample" {
   description    = "Terraform provider sample resource"
 }
 
-resource "permit_resource_action" "sample_create" {
-  key            = "create"
+resource "permit_resource_action" "sample_actions" {
+  for_each       = toset(["create", "read", "update", "delete"])
+  key            = each.key
   project_id     = permit_project.sample.id
   environment_id = permit_environment.sample.id
   resource_id    = permit_resource.sample.id
-  name           = "create"
-  description    = "Terraform provider sample resource action create"
+  name           = each.key
+  description    = "Terraform provider sample resource actions"
 }
 
 resource "permit_role" "sample" {
@@ -53,7 +54,9 @@ resource "permit_role" "sample" {
   name           = "Sample Role"
   description    = "Terraform provider sample role"
   permissions = [
-    permit_resource_action.sample_create.id
+    permit_resource_action.sample_actions["create"].id,
+    permit_resource_action.sample_actions["read"].id,
+    permit_resource_action.sample_actions["update"].id
   ]
 }
 
