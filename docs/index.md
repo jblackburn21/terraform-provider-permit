@@ -23,4 +23,4 @@ provider "permit" {
 
 ### Optional
 
-- `api_key` (String) The API Key for Permit.io. May also be provided via the PERMIT_API_KEY environment variable.
+- `api_key` (String) The Organization API Key for Permit.io. May also be provided via the PERMIT_API_KEY environment variable.
