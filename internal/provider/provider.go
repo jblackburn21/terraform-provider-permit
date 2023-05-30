@@ -41,7 +41,7 @@ func (p *permitProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"api_key": schema.StringAttribute{
-				MarkdownDescription: "The API Key for Permit.io. May also be provided via the PERMIT_API_KEY environment variable.",
+				MarkdownDescription: "The Organization API Key for Permit.io. May also be provided via the PERMIT_API_KEY environment variable.",
 				Optional:            true,
 			},
 		},

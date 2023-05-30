@@ -8,10 +8,8 @@ require (
 	github.com/hashicorp/terraform-plugin-go v0.15.0
 	github.com/hashicorp/terraform-plugin-log v0.8.0
 	github.com/hashicorp/terraform-plugin-testing v1.2.0
-	github.com/permitio/permit-golang v0.0.5
+	github.com/permitio/permit-golang v0.0.9
 )
-
-replace github.com/permitio/permit-golang v0.0.5 => /Users/jblackburn/repos/github/jblackburn21/permit-golang
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
