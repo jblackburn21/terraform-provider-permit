@@ -259,8 +259,8 @@ github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
 github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=
-github.com/permitio/permit-golang v0.0.9 h1:3F7n8Csb/uKx4cWJjS0kYX+UEPjWJ0iHBdDl1UDhJKc=
-github.com/permitio/permit-golang v0.0.9/go.mod h1:phP2AVSL3bgDKfhhmhPt/VJAN8UUDJoQtVjUKRfY5Ck=
+github.com/permitio/permit-golang v0.0.12 h1:NlJIGciFkgzEKZ1KglzohFHSSXdUT44QuasM1iuee4Q=
+github.com/permitio/permit-golang v0.0.12/go.mod h1:phP2AVSL3bgDKfhhmhPt/VJAN8UUDJoQtVjUKRfY5Ck=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
