@@ -36,5 +36,3 @@ resource "permit_project" "sample" {
 
 - `id` (String) Project identifier
 - `organization_id` (String) Organization identifier
-
-

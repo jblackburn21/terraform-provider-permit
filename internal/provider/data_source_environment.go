@@ -107,6 +107,10 @@ func (d *environmentDataSource) Read(ctx context.Context, req datasource.ReadReq
 	ctx = tflog.SetField(ctx, "permit_project_id", projectId)
 	ctx = tflog.SetField(ctx, "permit_environment_key", environmentKey)
 
+	tflog.Debug(ctx, "Setting context for environment")
+
+	d.client.Api.SetContext(ctx, projectId, "")
+
 	tflog.Debug(ctx, "Reading environment data source for key")
 
 	environment, err := d.client.Api.Environments.Get(ctx, environmentKey)

@@ -40,5 +40,3 @@ resource "permit_tenant" "sample" {
 
 - `id` (String) Tenant identifier
 - `organization_id` (String) Organization identifier
-
-
