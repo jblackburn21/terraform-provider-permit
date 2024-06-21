@@ -203,12 +203,12 @@ func (r *environmentResource) Read(ctx context.Context, req resource.ReadRequest
 
 	// Map response body to model
 	state = environmentResourceModel{
-		Id:             types.StringValue(environment.Id),
-		OrganizationId: types.StringValue(environment.OrganizationId),
-		ProjectId:      types.StringValue(environment.ProjectId),
-		Key:            types.StringValue(environment.Key),
-		Name:           types.StringValue(environment.Name),
-		Description:    types.StringValue(*environment.Description),
+		Id:             types.StringValue(environment.GetId()),
+		OrganizationId: types.StringValue(environment.GetOrganizationId()),
+		ProjectId:      types.StringValue(environment.GetProjectId()),
+		Key:            types.StringValue(environment.GetKey()),
+		Name:           types.StringValue(environment.GetName()),
+		Description:    types.StringValue(environment.GetDescription()),
 	}
 
 	tflog.Debug(ctx, "Updating environment state")
@@ -270,12 +270,12 @@ func (r *environmentResource) Update(ctx context.Context, req resource.UpdateReq
 
 	// Overwrite items with refreshed state
 	plan = environmentResourceModel{
-		Id:             types.StringValue(environment.Id),
-		OrganizationId: types.StringValue(environment.OrganizationId),
-		ProjectId:      types.StringValue(environment.ProjectId),
-		Key:            types.StringValue(environment.Key),
-		Name:           types.StringValue(environment.Name),
-		Description:    types.StringValue(*environment.Description),
+		Id:             types.StringValue(environment.GetId()),
+		OrganizationId: types.StringValue(environment.GetOrganizationId()),
+		ProjectId:      types.StringValue(environment.GetProjectId()),
+		Key:            types.StringValue(environment.GetKey()),
+		Name:           types.StringValue(environment.GetName()),
+		Description:    types.StringValue(environment.GetDescription()),
 	}
 
 	tflog.Debug(ctx, "Updating environment state")

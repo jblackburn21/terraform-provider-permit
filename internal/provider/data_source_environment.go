@@ -126,12 +126,12 @@ func (d *environmentDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	// Map environment body to model
 	state = environmentDataSourceModel{
-		Id:             types.StringValue(environment.Id),
-		OrganizationId: types.StringValue(environment.OrganizationId),
-		ProjectId:      types.StringValue(environment.ProjectId),
-		Key:            types.StringValue(environment.Key),
-		Name:           types.StringValue(environment.Name),
-		Description:    types.StringValue(*environment.Description),
+		Id:             types.StringValue(environment.GetId()),
+		OrganizationId: types.StringValue(environment.GetOrganizationId()),
+		ProjectId:      types.StringValue(environment.GetProjectId()),
+		Key:            types.StringValue(environment.GetKey()),
+		Name:           types.StringValue(environment.GetName()),
+		Description:    types.StringValue(environment.GetDescription()),
 	}
 
 	// Set state

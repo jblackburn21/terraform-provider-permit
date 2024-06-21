@@ -115,11 +115,11 @@ func (d *projectDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	// Map project body to model
 	state = projectDataSourceModel{
-		Id:             types.StringValue(project.Id),
-		OrganizationId: types.StringValue(project.OrganizationId),
-		Key:            types.StringValue(project.Key),
-		Name:           types.StringValue(project.Name),
-		Description:    types.StringValue(*project.Description),
+		Id:             types.StringValue(project.GetId()),
+		OrganizationId: types.StringValue(project.GetOrganizationId()),
+		Key:            types.StringValue(project.GetKey()),
+		Name:           types.StringValue(project.GetName()),
+		Description:    types.StringValue(project.GetDescription()),
 	}
 
 	// Set state

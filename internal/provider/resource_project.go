@@ -183,11 +183,11 @@ func (r *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 
 	// Map response body to model
 	state = projectResourceModel{
-		Id:             types.StringValue(project.Id),
-		OrganizationId: types.StringValue(project.OrganizationId),
-		Key:            types.StringValue(project.Key),
-		Name:           types.StringValue(project.Name),
-		Description:    types.StringValue(*project.Description),
+		Id:             types.StringValue(project.GetId()),
+		OrganizationId: types.StringValue(project.GetOrganizationId()),
+		Key:            types.StringValue(project.GetKey()),
+		Name:           types.StringValue(project.GetName()),
+		Description:    types.StringValue(project.GetDescription()),
 	}
 
 	tflog.Debug(ctx, "Updating project state")
@@ -245,11 +245,11 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	// Overwrite items with refreshed state
 	plan = projectResourceModel{
-		Id:             types.StringValue(project.Id),
-		OrganizationId: types.StringValue(project.OrganizationId),
-		Key:            types.StringValue(project.Key),
-		Name:           types.StringValue(project.Name),
-		Description:    types.StringValue(*project.Description),
+		Id:             types.StringValue(project.GetId()),
+		OrganizationId: types.StringValue(project.GetOrganizationId()),
+		Key:            types.StringValue(project.GetKey()),
+		Name:           types.StringValue(project.GetName()),
+		Description:    types.StringValue(project.GetDescription()),
 	}
 
 	tflog.Debug(ctx, "Updating project state")

@@ -216,13 +216,13 @@ func (r *tenantResource) Read(ctx context.Context, req resource.ReadRequest, res
 
 	// Map response body to model
 	state = tenantResourceModel{
-		Id:             types.StringValue(tenant.Id),
-		OrganizationId: types.StringValue(tenant.OrganizationId),
-		ProjectId:      types.StringValue(tenant.ProjectId),
-		EnvironmentId:  types.StringValue(tenant.EnvironmentId),
-		Key:            types.StringValue(tenant.Key),
-		Name:           types.StringValue(tenant.Name),
-		Description:    types.StringValue(*tenant.Description),
+		Id:             types.StringValue(tenant.GetId()),
+		OrganizationId: types.StringValue(tenant.GetOrganizationId()),
+		ProjectId:      types.StringValue(tenant.GetProjectId()),
+		EnvironmentId:  types.StringValue(tenant.GetEnvironmentId()),
+		Key:            types.StringValue(tenant.GetKey()),
+		Name:           types.StringValue(tenant.GetName()),
+		Description:    types.StringValue(tenant.GetDescription()),
 	}
 
 	tflog.Debug(ctx, "Updating tenant state")
@@ -286,13 +286,13 @@ func (r *tenantResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	// Overwrite items with refreshed state
 	plan = tenantResourceModel{
-		Id:             types.StringValue(tenant.Id),
-		OrganizationId: types.StringValue(tenant.OrganizationId),
-		ProjectId:      types.StringValue(tenant.ProjectId),
-		EnvironmentId:  types.StringValue(tenant.EnvironmentId),
-		Key:            types.StringValue(tenant.Key),
-		Name:           types.StringValue(tenant.Name),
-		Description:    types.StringValue(*tenant.Description),
+		Id:             types.StringValue(tenant.GetId()),
+		OrganizationId: types.StringValue(tenant.GetOrganizationId()),
+		ProjectId:      types.StringValue(tenant.GetProjectId()),
+		EnvironmentId:  types.StringValue(tenant.GetEnvironmentId()),
+		Key:            types.StringValue(tenant.GetKey()),
+		Name:           types.StringValue(tenant.GetName()),
+		Description:    types.StringValue(tenant.GetDescription()),
 	}
 
 	tflog.Debug(ctx, "Updating tenant state")
