@@ -124,9 +124,6 @@ func (p *permitProvider) Resources(ctx context.Context) []func() resource.Resour
 	return []func() resource.Resource{
 		NewEnvironmentResource,
 		NewProjectResource,
-		NewResourceResource,
-		NewResourceActionResource,
-		NewRoleResource,
 		NewTenantResource,
 	}
 }
