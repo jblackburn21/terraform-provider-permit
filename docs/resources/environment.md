@@ -38,5 +38,3 @@ resource "permit_environment" "sample" {
 
 - `id` (String) Environment identifier
 - `organization_id` (String) Organization identifier
-
-

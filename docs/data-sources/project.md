@@ -31,5 +31,3 @@ data "permit_project" "project" {
 - `id` (String) Project identifier
 - `name` (String) Project name
 - `organization_id` (String) Organization identifier
-
-

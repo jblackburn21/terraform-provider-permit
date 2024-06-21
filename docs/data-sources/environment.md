@@ -33,5 +33,3 @@ data "permit_environment" "sample" {
 - `id` (String) Environment identifier
 - `name` (String) Environment name
 - `organization_id` (String) Organization identifier
-
-
