@@ -41,7 +41,7 @@ func (p *permitProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"api_key": schema.StringAttribute{
-				MarkdownDescription: "The Organization API Key for Permit.io. May also be provided via the PERMIT_API_KEY environment variable.",
+				MarkdownDescription: "The Organization API Key for Permit.io. May also be provided via the PERMITIO_API_KEY environment variable.",
 				Optional:            true,
 			},
 		},
@@ -69,7 +69,7 @@ func (p *permitProvider) Configure(ctx context.Context, req provider.ConfigureRe
 			path.Root("api_key"),
 			"Unknown API Key",
 			"The provider cannot create the Permit client as there is an unknown configuration value for the API Key. "+
-				"Either target apply the source of the value first, set the value statically in the configuration, or use the PERMIT_API_KEY environment variable.",
+				"Either target apply the source of the value first, set the value statically in the configuration, or use the PERMITIO_API_KEY environment variable.",
 		)
 	}
 
@@ -79,7 +79,7 @@ func (p *permitProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 	// Default values to environment variables, but override
 	// with Terraform configuration value if set.
-	apiKey := os.Getenv("PERMIT_API_KEY")
+	apiKey := os.Getenv("PERMITIO_API_KEY")
 
 	if !providerConfig.ApiKey.IsNull() {
 		apiKey = providerConfig.ApiKey.ValueString()
@@ -93,7 +93,7 @@ func (p *permitProvider) Configure(ctx context.Context, req provider.ConfigureRe
 			path.Root("api_key"),
 			"Missing API Key",
 			"The provider cannot create the Permit client as there is a missing or empty value for the API Key. "+
-				"Set the api_key value in the configuration or use the PERMIT_API_KEY environment variable. "+
+				"Set the api_key value in the configuration or use the PERMITIO_API_KEY environment variable. "+
 				"If either is already set, ensure the value is not empty.",
 		)
 	}
